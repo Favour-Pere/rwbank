@@ -17,10 +17,12 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.robert.rwbank.dto.EmailDetails;
 import com.robert.rwbank.entity.Transaction;
 import com.robert.rwbank.entity.User;
 import com.robert.rwbank.repository.TransactionRepository;
 import com.robert.rwbank.repository.UserRepository;
+import com.robert.rwbank.services.EmailService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ public class BankStatement {
    private TransactionRepository transactionRepository;
 
    private UserRepository userRepository;
+   private EmailService emailService;
 
    public static final String FILE = "/Users/robertperemobowei/Documents/Statements/MyStatements.pdf";
 
@@ -132,6 +135,15 @@ public class BankStatement {
       document.add(transactionTable);
 
       document.close();
+
+      EmailDetails emailDetails = EmailDetails.builder()
+      .recipient(user.getEmail())
+      .subject("STATEMENT OF ACCOUNT")
+      .messageBody("Kindly find your requested account statement attached")
+      .attachment(FILE)
+      .build();
+
+      emailService.sendEmailWithAttachement(emailDetails);
 
       return transactionList;
    }
