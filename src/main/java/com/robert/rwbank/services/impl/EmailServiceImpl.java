@@ -1,23 +1,25 @@
 package com.robert.rwbank.services.impl;
 
-import com.robert.rwbank.dto.EmailDetails;
-import com.robert.rwbank.services.EmailService;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.robert.rwbank.dto.EmailDetails;
+import com.robert.rwbank.services.EmailService;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class EmailServiceImpl implements EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
@@ -45,16 +47,19 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmailWithAttachement(EmailDetails emailDetails) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
-        try{
-          mimeMessageHelper  = new MimeMessageHelper(mimeMessage, true);
-          mimeMessageHelper.setFrom(senderEmail);
-          mimeMessageHelper.setTo(emailDetails.getRecipient());
-          mimeMessageHelper.setText(emailDetails.getMessageBody());
-          mimeMessageHelper.setSubject(emailDetails.getSubject());
+        try {
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper.setFrom(senderEmail);
+            mimeMessageHelper.setTo(emailDetails.getRecipient());
+            mimeMessageHelper.setText(emailDetails.getMessageBody());
+            mimeMessageHelper.setSubject(emailDetails.getSubject());
 
-          FileSystemResource file = new FileSystemResourse(new File(emailDetails.getAttachment()));
-        }
-        catch(MessagingException e){
+            FileSystemResource file = new FileSystemResource(new File(emailDetails.getAttachment()));
+            mimeMessageHelper.addAttachment(file.getFilename(), file);
+            javaMailSender.send(mimeMessage);
+
+            log.info(file.getFilename() + " has been sent to user with mail " + emailDetails.getRecipient());
+        } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
     }
