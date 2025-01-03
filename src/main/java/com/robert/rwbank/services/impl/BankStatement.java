@@ -57,8 +57,8 @@ public class BankStatement {
       String customerName = user.getFirstName() + " " + user.getLastName() + " " + user.getOtherName();
       List<Transaction> transactionList = transactionRepository.findAll().stream()
             .filter(transaction -> transaction.getAccountNumber().equals(accountNumber))
-            .filter(transaction -> transaction.getCreatedAt().isEqual(start))
-            .filter(transaction -> transaction.getCreatedAt().isEqual(end)).toList();
+            .filter(transaction -> transaction.getCreatedAt().isAfter(start))
+            .filter(transaction -> transaction.getCreatedAt().isBefore(end)).toList();
 
       Document document = new Document(PageSize.A4, 20, 20, 30, 30);
       log.info("setting size of document");
@@ -135,6 +135,8 @@ public class BankStatement {
       document.add(transactionTable);
 
       document.close();
+
+      // TODO: Add an opening balance and closing balance
 
       EmailDetails emailDetails = EmailDetails.builder()
       .recipient(user.getEmail())
