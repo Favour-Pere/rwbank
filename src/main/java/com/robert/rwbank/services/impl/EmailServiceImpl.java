@@ -1,6 +1,7 @@
 package com.robert.rwbank.services.impl;
 
 import java.io.File;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,10 +53,11 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setFrom(senderEmail);
             mimeMessageHelper.setTo(emailDetails.getRecipient());
             mimeMessageHelper.setText(emailDetails.getMessageBody());
+            
             mimeMessageHelper.setSubject(emailDetails.getSubject());
 
             FileSystemResource file = new FileSystemResource(new File(emailDetails.getAttachment()));
-            mimeMessageHelper.addAttachment(file.getFilename(), file);
+            mimeMessageHelper.addAttachment((Objects.requireNonNull(file.getFilename())), file);
             javaMailSender.send(mimeMessage);
 
             log.info(file.getFilename() + " has been sent to user with mail " + emailDetails.getRecipient());

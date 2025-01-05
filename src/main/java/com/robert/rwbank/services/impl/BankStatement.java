@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -42,7 +43,7 @@ public class BankStatement {
    /**
     * retrive list of transactions within a date range given an account number
     * genarate a pdf file of transactions
-    * send the file via emaol
+    * send the file via email
     * 
     * @throws DocumentException
     * @throws FileNotFoundException
@@ -60,9 +61,10 @@ public class BankStatement {
       }
       List<Transaction> transactionList = transactionRepository.findAll().stream()
             .filter(transaction -> transaction.getAccountNumber().equals(accountNumber))
-            .filter(transaction -> !transaction.getCreatedAt().isAfter(start))
-            .filter(transaction -> !transaction.getCreatedAt().isBefore(end)).toList();
-           
+            .filter(transaction -> !transaction.getCreatedAt().isBefore(start)) // Includes start
+            .filter(transaction -> !transaction.getCreatedAt().isAfter(end)) // Includes end
+            .sorted(Comparator.comparing(Transaction::getCreatedAt))          // Ascending order
+            .toList();
 
       Document document = new Document(PageSize.A4, 20, 20, 30, 30);
       log.info("setting size of document");
@@ -126,7 +128,7 @@ public class BankStatement {
          transactionTable.addCell(new Phrase(transaction.getDescription().toString()));
          transactionTable.addCell(new Phrase(transaction.getStatus().toString()));
       });
-      
+
       statementInfo.addCell(customerInfo);
       statementInfo.addCell(statement);
       statementInfo.addCell(stopDate);
@@ -139,22 +141,19 @@ public class BankStatement {
       document.add(transactionTable);
 
       document.close();
-   
 
       // TODO: Add an opening balance and closing balance
 
-      EmailDetails emailDetails = EmailDetails.builder()
-      .recipient(user.getEmail())
-      .subject("STATEMENT OF ACCOUNT")
-      .messageBody("Kindly find your requested account statement attached")
-      .attachment(FILE)
-      .build();
+      // EmailDetails emailDetails = EmailDetails.builder()
+      // .recipient(user.getEmail())
+      // .subject("STATEMENT OF ACCOUNT")
+      // .messageBody("Kindly find your requested account statement attached")
+      // .attachment(FILE)
+      // .build();
 
-      emailService.sendEmailWithAttachement(emailDetails);
+      // emailService.sendEmailWithAttachement(emailDetails);
 
       return transactionList;
    }
 
 }
-
-
