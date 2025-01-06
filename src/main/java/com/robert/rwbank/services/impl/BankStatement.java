@@ -144,14 +144,14 @@ public class BankStatement {
 
       // TODO: Add an opening balance and closing balance
 
-      // EmailDetails emailDetails = EmailDetails.builder()
-      // .recipient(user.getEmail())
-      // .subject("STATEMENT OF ACCOUNT")
-      // .messageBody("Kindly find your requested account statement attached")
-      // .attachment(FILE)
-      // .build();
+      EmailDetails emailDetails = EmailDetails.builder()
+      .recipient(user.getEmail())
+      .subject("STATEMENT OF ACCOUNT")
+      .messageBody("Kindly find your requested account statement attached")
+      .attachment(FILE)
+      .build();
 
-      // emailService.sendEmailWithAttachement(emailDetails);
+      emailService.sendEmailWithAttachement(emailDetails);
 
       return transactionList;
    }
