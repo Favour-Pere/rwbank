@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @AllArgsConstructor
 public class TransactionController {
 
-    private BankStatement bankStatement;
+    private final BankStatement bankStatement;
 
     @GetMapping
     public List<Transaction> genarateBankStatement(@RequestParam String accountNumber, @RequestParam String startDate,

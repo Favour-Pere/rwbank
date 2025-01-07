@@ -20,12 +20,16 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @SuppressWarnings("removal")
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Throwable {
-        httpSecurity.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/api/user").permitAll()
-                        .anyRequest().authenticated());
-        httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        httpSecurity.csrf().disable().authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+
+        //  httpSecurity.csrf(csrf -> csrf.disable())
+        //         .authorizeHttpRequests(authorize -> authorize.requestMatchers(HttpMethod.POST, "/api/user/").permitAll()
+        //                 .anyRequest().authenticated());
+        // httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return httpSecurity.build();
     }
