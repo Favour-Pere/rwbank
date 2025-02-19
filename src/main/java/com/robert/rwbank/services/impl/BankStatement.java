@@ -123,10 +123,10 @@ public class BankStatement {
 
       transactionList.forEach(transaction -> {
          transactionTable.addCell(new Phrase(transaction.getCreatedAt().toString()));
-         transactionTable.addCell(new Phrase(transaction.getTransactionType().toString()));
+         transactionTable.addCell(new Phrase(transaction.getTransactionType()));
          transactionTable.addCell(new Phrase(transaction.getAmount().toString()));
-         transactionTable.addCell(new Phrase(transaction.getDescription().toString()));
-         transactionTable.addCell(new Phrase(transaction.getStatus().toString()));
+         transactionTable.addCell(new Phrase(transaction.getDescription()));
+         transactionTable.addCell(new Phrase(transaction.getStatus()));
       });
 
       statementInfo.addCell(customerInfo);
